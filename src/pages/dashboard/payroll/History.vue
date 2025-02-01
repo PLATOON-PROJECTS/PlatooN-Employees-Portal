@@ -22,7 +22,7 @@ import { getItem } from "../../../core/utils/storage.helper";
 import Pagination from "../../../components/Pagination.vue";
 import { Payroll } from "../../../service/payroll/interface/payroll.interface";
 import { formatNumber, dateFormat, formatDate, formatDatee } from "../../../core/helpers/actions"
-
+import html2pdf from 'html2pdf.js';
 // initialize router
 const router = useRouter();
 
@@ -71,6 +71,17 @@ const organisationId = parsedUserInfo?.customerInfo?.organisationId;
 //   };
 //   return new Date(dateString).toLocaleDateString(undefined, options).replace(",", "");
 // };
+
+const slip = ref({
+  name: "",
+  narration: "",
+  paymentDate: "",
+  grossPay: 0,
+  bonus: 0,
+  deductions: 0,
+  tax: 0,
+  netPay: 0,
+})
 
 const firstName = computed(() => {
   const userDetails = parsedUserInfo;
@@ -231,6 +242,31 @@ const updatePage = (page: number) => {
 }
 // fetchAllPayrolls();
 
+const exportToPDF = () => {
+  slip.value = {
+        name: "Adebayoowa Temifayowa",
+        narration: "October Payslip",
+        paymentDate: "20/08/2024",
+        grossPay: 0,
+        bonus: 30000,
+        deductions: 5000,
+        tax: 500,
+        netPay: 24500,
+    };
+    var element = document.getElementById('element-to-print');
+    var opt = {
+        orientation: 'p',
+        unit: 'mm',
+        format: 'a4',
+        putOnlyUsedFonts:true,
+        floatPrecision: 16,
+        image: { type: 'jpeg', quality: 1.50 },
+        html2canvas:  { scale: 4 },
+    };
+    html2pdf().set(opt).from(element).save(`${slip.value.name}-${slip.value.paymentDate}`);
+    // html2pdf().set(opt).from(element).save(`${responseData.value.data.data.firstname+' '+responseData.value.data.data.lastname+slip.value.narration}-${slip.value.paymentDate}`);
+}
+
 // navigateToCreateNew();
 </script>
 <template>
@@ -305,7 +341,7 @@ const updatePage = (page: number) => {
             </ButtonBlue>
           </div> -->
           <div>
-            <ButtonBlue v-if="isSinglePayrollSelected">
+            <ButtonBlue v-if="isSinglePayrollSelected"  @click="exportToPDF">
               <template v-slot:placeholder>
                 <span>Generate Payslip</span>
               </template>
@@ -514,6 +550,7 @@ const updatePage = (page: number) => {
           </div>
         </div>
         <!-- end of table -->
+
         <Pagination 
         :currentPage="currentPage" 
         :totalPages="totalPages"
@@ -521,6 +558,106 @@ const updatePage = (page: number) => {
         :totalItems="totalItems"
         @updatePage="updatePage"
         />
+      </div>
+
+      <div class="hidden">
+        <div id="element-to-print">   
+          <div class="p-6 bg-white shadow-md rounded-md w-full max-w-3xl mx-auto">
+            <!-- Header -->
+            <div class="flex justify-between items-center pb-4 mb-4">
+              <img src="/images/png/logo.png" alt="logo" class="h-12">
+              <div class="text-left text-sm">
+                <p class="font-bold">String-Land</p>
+                <p>P20a Alakinde Street, Osogbo</p>
+                <p>Osun</p>
+              </div>
+            </div>
+        
+            <!-- Payslip Title -->
+            <h1 class="text-2xl text-center font-bold mb-6">Payslip</h1>
+        
+            <!-- Employee Details -->
+            <div class="flex justify-between px-8 mb-4">
+              <div>
+                <p class="font-semibold py-1">Employee Name</p>
+                <p class="font-semibold py-1">Employment Status</p>
+                <p class="font-semibold py-1">Month</p>
+                <p class="font-semibold py-1">Pay Date</p>
+              </div>
+              <div class="text-left">
+                <p class="py-1">Adebayoowa Temifayowa</p>
+                <p class="py-1">Full Time</p>
+                <p class="py-1">October</p>
+                <p class="py-1">20/08/2024</p>
+              </div>
+            </div>
+        
+            <!-- Payment Details -->
+            <div class="flex justify-between mx-5 px-3 py-2 font-semibold bg-white-smoke">
+              <span>Description</span>
+              <span class="mr-4">Amount</span>
+            </div>
+            <div class="flex justify-between px-8">
+              <div>
+                <p class="py-2">Gross Pay</p>
+                <p class="py-2">Bonus</p>
+                <p class="py-2">Deduction</p>
+                <p class="py-2">Tax</p>
+                <p class="py-2">Pension</p>
+              </div>
+              <div class="text-left">
+                <p class="py-2">₦0</p>
+                <p class="py-2">₦30,000</p>
+                <p class="py-2">₦5,000</p>
+                <p class="py-2">₦500</p>
+                <p class="py-2">₦0</p>
+              </div>
+            </div>
+            <div class="flex justify-between mx-5 px-3 py-2 mb-4 font-semibold bg-white-smoke">
+              <span>Net Pay</span>
+              <span>₦24,500</span>
+            </div>
+            <!-- Payment Details -->
+            <!-- <div class="bg-gray-200 px-8 py-4 mb-4 text-left">
+              <div class="flex justify-between">
+                <span>Description</span>
+                <span>Amount</span>
+              </div>
+              <div class="flex justify-between py-2">
+                <span>Gross Pay</span>
+                <span>₦200,000</span>
+              </div>
+              <div class="flex justify-between py-2">
+                <span>Bonus</span>
+                <span>₦0.00</span>
+              </div>
+              <div class="flex justify-between py-2">
+                <span>Deductions</span>
+                <span>₦0.00</span>
+              </div>
+              <div class="flex justify-between py-2">
+                <span>Tax</span>
+                <span>₦10,000</span>
+              </div>
+              <div class="flex justify-between py-2">
+                <span>Pension</span>
+                <span>₦10,000</span>
+              </div>
+              <div class="flex justify-between font-bold py-2">
+                <span>Net Pay</span>
+                <span>₦198,000</span>
+              </div>
+            </div> -->
+        
+            <!-- Account Details -->
+            <div class="px-8 mb-4 mt-5">
+              <h3 class="font-bold">Account Details</h3>
+              <p>Account Name: Adebayoowa Temifayowa</p>
+              <p>Account Number: 1234567890</p>
+              <p>Bank Name: Opay</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
