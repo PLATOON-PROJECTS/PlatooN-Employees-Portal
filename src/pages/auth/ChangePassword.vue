@@ -120,6 +120,7 @@ const handleRegister = async (): Promise<void> => {
       responseData.value = successResponse;
       // responseData.value.message = "Login successful";
       // console.log(responseData.value);
+      console.log(responseData.value);
 
       setTimeout(() => {
         router.push({name: 'auth.login'});
