@@ -215,8 +215,8 @@ const fetchAllPayrolls = async () => {
 };
 
 const fetchPayrollHistory = async (page = 1) => {
-  // const userId = Number(localStorage.getItem('userId'));
-  const userId = 43;
+  const userId = Number(localStorage.getItem('userId'));
+  // const userId = 43;
     if (userId) {
       loading.value = true; 
         try {
@@ -534,7 +534,7 @@ const exportToPDF = () => {
                       <td colspan="8"> <!-- colspan based on table structure -->
                         <EmptyState>
                           <template #icon>
-                            <IUserThree />
+                            <IUserThree /> 
                           </template>
                           <template #heading> Payroll </template>
                           <template #desc>
